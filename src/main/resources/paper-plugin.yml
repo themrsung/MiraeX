@@ -1,0 +1,25 @@
+name: MiraeX
+version: '1.0'
+main: me.sjun.dev.mirae.MiraeX
+api-version: '1.21'
+dependencies:
+  bootstrap:
+    Vault:
+      required: true
+    ItemsAdder:
+      required: true
+    PlayerAuctions:
+      required: false
+      load: AFTER
+    GriefPrevention:
+      required: true
+  server:
+    Vault:
+      required: true
+    ItemsAdder:
+      required: true
+    PlayerAuctions:
+      required: false
+      load: AFTER
+    GriefPrevention:
+      required: true
