@@ -10,18 +10,21 @@ import java.util.UUID;
 public interface MXAccount {
     /**
      * Returns the unique identifier.
+     *
      * @return The unique identifier
      */
     @NotNull UUID getUniqueId();
 
     /**
      * Returns the name.
+     *
      * @return The name
      */
     @NotNull String getName();
 
     /**
      * Returns the balance.
+     *
      * @return The balance
      */
     double getBalance();

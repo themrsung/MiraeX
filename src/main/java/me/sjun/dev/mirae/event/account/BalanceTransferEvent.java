@@ -9,10 +9,11 @@ import org.jetbrains.annotations.NotNull;
 public class BalanceTransferEvent extends AccountToAccountEvent {
     /**
      * Creates a new event.
-     * @param sender The sender
+     *
+     * @param sender    The sender
      * @param recipient The recipient
-     * @param amount The amount
-     * @param message The message
+     * @param amount    The amount
+     * @param message   The message
      */
     public BalanceTransferEvent(
             @NotNull MXAccount sender,
@@ -30,6 +31,7 @@ public class BalanceTransferEvent extends AccountToAccountEvent {
 
     /**
      * Returns the amount.
+     *
      * @return The amount
      */
     public double getAmount() {
@@ -38,6 +40,7 @@ public class BalanceTransferEvent extends AccountToAccountEvent {
 
     /**
      * Returns the message.
+     *
      * @return The message
      */
     public @NotNull String getMessage() {

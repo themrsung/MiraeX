@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 public abstract class AccountEvent {
     /**
      * Creates a new event.
+     *
      * @param account The account
      */
     public AccountEvent(@NotNull MXAccount account) {
@@ -19,6 +20,7 @@ public abstract class AccountEvent {
 
     /**
      * Returns the account.
+     *
      * @return The account
      */
     public @NotNull MXAccount getAccount() {

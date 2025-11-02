@@ -10,6 +10,7 @@ import java.util.UUID;
 public interface AccountLedger {
     /**
      * Returns the account associated with the unique identifier.
+     *
      * @param uniqueId The unique identifier
      * @return The optional account
      */
@@ -17,8 +18,9 @@ public interface AccountLedger {
 
     /**
      * Creates a new account.
+     *
      * @param uniqueId The unique identifier
-     * @param name The name
+     * @param name     The name
      * @return The created account
      * @throws IllegalArgumentException When the unique identifier is already taken
      */
@@ -26,6 +28,7 @@ public interface AccountLedger {
 
     /**
      * Creates a new account.
+     *
      * @param player The player
      * @return The created account
      * @throws IllegalArgumentException When the unique identifier is already taken
@@ -34,6 +37,7 @@ public interface AccountLedger {
 
     /**
      * Removes the account.
+     *
      * @param uniqueId The unique identifier
      * @return {@code true} if it was successfully removed
      */
@@ -41,36 +45,40 @@ public interface AccountLedger {
 
     /**
      * Adds balance to the account.
+     *
      * @param account The account
-     * @param amount The amount
+     * @param amount  The amount
      * @param message The message
      */
     void addBalance(@NotNull MXAccount account, double amount, @NotNull String message);
 
     /**
      * Subtracts balance from the account.
+     *
      * @param account The account
-     * @param amount The amount
+     * @param amount  The amount
      * @param message The message
      */
     void subtractBalance(@NotNull MXAccount account, double amount, @NotNull String message);
 
     /**
      * Transfers balance.
-     * @param sender The sender
+     *
+     * @param sender    The sender
      * @param recipient The recipient
-     * @param amount The amount to send
-     * @param message The message
+     * @param amount    The amount to send
+     * @param message   The message
      * @return {@code true} if it was successful
      */
     boolean transferBalance(@NotNull MXAccount sender, @NotNull MXAccount recipient, double amount, @NotNull String message);
 
     /**
      * Forcefully transfers balance.
-     * @param sender The sender
+     *
+     * @param sender    The sender
      * @param recipient The recipient
-     * @param amount The amount
-     * @param message The message
+     * @param amount    The amount
+     * @param message   The message
      */
     void forceTransferBalance(@NotNull MXAccount sender, @NotNull MXAccount recipient, double amount, @NotNull String message);
 }

@@ -9,7 +9,8 @@ import org.jetbrains.annotations.NotNull;
 public abstract class AccountToAccountEvent extends AccountEvent {
     /**
      * Creates a new event.
-     * @param actor The acting account
+     *
+     * @param actor  The acting account
      * @param target The target account
      */
     public AccountToAccountEvent(@NotNull MXAccount actor, @NotNull MXAccount target) {
@@ -21,6 +22,7 @@ public abstract class AccountToAccountEvent extends AccountEvent {
 
     /**
      * Returns the target account.
+     *
      * @return The target account
      */
     public @NotNull MXAccount getTarget() {
