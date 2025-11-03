@@ -1,5 +1,6 @@
 package me.sjun.dev.mirae.account;
 
+import me.sjun.dev.mirae.storage.ItemStorage;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -22,12 +23,14 @@ public abstract sealed class AbstractAccount implements MXAccount permits LocalA
         this.uniqueId = uniqueId;
         this.name = name;
         this.balance = 0;
+        this.itemStorage = new ItemStorage();
     }
 
 
     private final @NotNull UUID uniqueId;
     private @NotNull String name;
     double balance;
+    private final @NotNull ItemStorage itemStorage;
 
     @Override
     public @NotNull UUID getUniqueId() {
@@ -62,5 +65,10 @@ public abstract sealed class AbstractAccount implements MXAccount permits LocalA
     @Override
     public double getBalance() {
         return balance;
+    }
+
+    @Override
+    public @NotNull ItemStorage getItemStorage() {
+        return itemStorage;
     }
 }

@@ -2,6 +2,7 @@ package me.sjun.dev.mirae.account;
 
 import com.google.gson.*;
 import me.sjun.dev.mirae.gson.GsonSerializer;
+import me.sjun.dev.mirae.storage.ItemStorage;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Type;
@@ -51,6 +52,7 @@ public final class LocalAccount extends AbstractAccount {
             object.add("uniqueId", context.serialize(localAccount.getUniqueId()));
             object.addProperty("name", localAccount.getName());
             object.addProperty("balance", localAccount.getBalance());
+            object.add("itemStorage", context.serialize(localAccount.getItemStorage()));
             return object;
         }
 
@@ -83,11 +85,18 @@ public final class LocalAccount extends AbstractAccount {
                 throw new JsonParseException("Required parameter balance missing.");
             }
 
+            if (!object.has("itemStorage") || object.get("itemStorage").isJsonNull()) {
+                throw new JsonParseException("Required parameter item storage is missing.");
+            }
+
             UUID uniqueId = context.deserialize(object.get("uniqueId"), UUID.class);
             String name = object.get("name").getAsString();
 
             LocalAccount account = new LocalAccount(uniqueId, name);
             account.balance = object.get("balance").getAsDouble();
+
+            account.getItemStorage().clearItems();
+            account.getItemStorage().addItems(context.deserialize(object.get("itemStorage"), ItemStorage.class));
 
             return account;
         }

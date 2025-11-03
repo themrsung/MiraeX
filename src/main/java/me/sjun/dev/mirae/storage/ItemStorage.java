@@ -183,6 +183,22 @@ public final class ItemStorage implements Serializable {
     }
 
     /**
+     * Forcefully bulk adds items.
+     *
+     * @param storage The storage to copy from
+     */
+    public void addItems(@NotNull ItemStorage storage) {
+        storage.itemMap.forEach(this::forceAddItems);
+    }
+
+    /**
+     * Clears the items in this storage.
+     */
+    public void clearItems() {
+        itemMap.clear();
+    }
+
+    /**
      * Returns the JSON serializer.
      *
      * @return The JSON serializer

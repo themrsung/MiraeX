@@ -5,6 +5,7 @@ import me.sjun.dev.mirae.command.MXCommand;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -25,9 +26,12 @@ public final class ReloadConfigCommand extends MXCommand {
             return failureFeedback(sender, NO_PERMISSION);
         }
 
-        MiraeX.getInstance().getMiraeConfig();
-
-        return successFeedback(sender, "설정을 불러왔습니다.");
+        try {
+            MiraeX.getInstance().loadConfig();
+            return successFeedback(sender, "설정을 불러왔습니다.");
+        } catch (IOException e) {
+            return failureFeedback(sender, "오류가 발생했습니다.");
+        }
     }
 
     @Override

@@ -5,6 +5,7 @@ import io.javalin.Javalin;
 import me.sjun.dev.mirae.account.AccountLedger;
 import me.sjun.dev.mirae.account.ConcurrentAccountLedger;
 import me.sjun.dev.mirae.command.CommandRegistrant;
+import me.sjun.dev.mirae.command.admin.ReloadConfigCommand;
 import me.sjun.dev.mirae.command.misc.PluginInfoCommand;
 import me.sjun.dev.mirae.config.MXConfig;
 import me.sjun.dev.mirae.gson.MXGson;
@@ -79,6 +80,7 @@ public final class MiraeX extends JavaPlugin {
         getLogger().info("Registering commands...");
         commandRegistrant = CommandRegistrant.start()
                 .queue(new PluginInfoCommand())
+                .queue(new ReloadConfigCommand())
                 .register(this);
 
         getLogger().info("Registering synchronous tasks...");

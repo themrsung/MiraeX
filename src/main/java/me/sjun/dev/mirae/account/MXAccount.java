@@ -2,6 +2,7 @@ package me.sjun.dev.mirae.account;
 
 import com.google.gson.*;
 import me.sjun.dev.mirae.gson.GsonSerializer;
+import me.sjun.dev.mirae.storage.ItemStorage;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -61,6 +62,13 @@ public sealed interface MXAccount extends Serializable permits AbstractAccount {
      * @return The balance
      */
     double getBalance();
+
+    /**
+     * Returns the item storage.
+     *
+     * @return The item storage
+     */
+    @NotNull ItemStorage getItemStorage();
 
     /**
      * Returns the account type.
