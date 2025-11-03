@@ -1,10 +1,16 @@
 package me.sjun.dev.mirae.account;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import me.sjun.dev.mirae.gson.GsonSerializer;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -90,4 +96,33 @@ public sealed interface AccountLedger extends Serializable permits ConcurrentAcc
      * @param message   The message
      */
     void forceTransferBalance(@NotNull MXAccount sender, @NotNull MXAccount recipient, double amount, @NotNull String message);
+
+    /**
+     * Returns the JSON serializer.
+     *
+     * @return The JSON serializer
+     */
+    static @NotNull Serializer serializer() {
+        return Serializer.serializer;
+    }
+
+    /**
+     * JSON serialization.
+     */
+    final class Serializer implements GsonSerializer<AccountLedger> {
+        private static final Serializer serializer = new Serializer();
+
+        private Serializer() {
+        }
+
+        @Override
+        public JsonElement serialize(AccountLedger ledger, Type type, JsonSerializationContext context) {
+            return ConcurrentAccountLedger.serializer().serialize((ConcurrentAccountLedger) ledger, type, context);
+        }
+
+        @Override
+        public AccountLedger deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
+            return ConcurrentAccountLedger.serializer().deserialize(element, type, context);
+        }
+    }
 }

@@ -15,6 +15,7 @@ public interface Task extends Runnable {
 
     /**
      * Returns the interval in ticks.
+     *
      * @return Interval in ticks
      */
     default long getInterval() {
@@ -23,6 +24,7 @@ public interface Task extends Runnable {
 
     /**
      * Returns the delay in ticks.
+     *
      * @return Delay in ticks
      */
     default long getDelay() {
@@ -31,6 +33,7 @@ public interface Task extends Runnable {
 
     /**
      * Returns the task type.
+     *
      * @return The task type
      */
     default @NotNull Type getType() {

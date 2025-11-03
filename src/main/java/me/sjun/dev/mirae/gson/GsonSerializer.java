@@ -2,6 +2,7 @@ package me.sjun.dev.mirae.gson;
 
 import com.google.gson.*;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collection;
@@ -41,6 +42,17 @@ public interface GsonSerializer<T> extends JsonSerializer<T>, JsonDeserializer<T
             entry.add("value", context.serialize(v));
             array.add(entry);
         });
+        return array;
+    }
+
+    @SuppressWarnings("unchecked")
+    static <X> X[] deserializeArray(JsonArray values, JsonDeserializationContext context, Class<X> type) {
+        X[] array = (X[]) Array.newInstance(type, values.size());
+
+        for (int i = 0; i < array.length; i++) {
+            array[i] = context.deserialize(values.get(i), type);
+        }
+
         return array;
     }
 

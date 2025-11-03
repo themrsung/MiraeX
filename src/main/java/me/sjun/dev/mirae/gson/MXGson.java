@@ -3,6 +3,7 @@ package me.sjun.dev.mirae.gson;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.javalin.json.JsonMapper;
+import me.sjun.dev.mirae.account.AccountLedger;
 import me.sjun.dev.mirae.account.MXAccount;
 import me.sjun.dev.mirae.config.MXConfig;
 import org.bukkit.Location;
@@ -72,6 +73,7 @@ public final class MXGson {
         builder.registerTypeAdapter(LocalDate.class, LocalDateSerializer.serializer())
                 .registerTypeAdapter(LocalDateTime.class, LocalDateTimeSerializer.serializer())
                 .registerTypeHierarchyAdapter(MXAccount.class, MXAccount.serializer())
+                .registerTypeHierarchyAdapter(AccountLedger.class, AccountLedger.serializer())
                 .registerTypeAdapter(MXConfig.class, MXConfig.serializer())
                 .registerTypeHierarchyAdapter(ItemStack.class, ItemStackSerializer.serializer())
                 .registerTypeHierarchyAdapter(Location.class, LocationSerializer.serializer());

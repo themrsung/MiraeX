@@ -1,12 +1,15 @@
 package me.sjun.dev.mirae.account;
 
+import com.google.gson.*;
 import me.sjun.dev.mirae.event.account.BalanceModifyEvent;
 import me.sjun.dev.mirae.event.account.BalanceTransferEvent;
+import me.sjun.dev.mirae.gson.GsonSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Type;
 import java.util.*;
 
 /**
@@ -81,5 +84,41 @@ public final class ConcurrentAccountLedger implements AccountLedger {
         absRecipient.balance += amount;
 
         Bukkit.getPluginManager().callEvent(new BalanceTransferEvent(sender, recipient, amount, message));
+    }
+
+    /**
+     * Returns the JSON serializer.
+     *
+     * @return The JSON serializer
+     */
+    static @NotNull Serializer serializer() {
+        return Serializer.serializer;
+    }
+
+    /**
+     * JSON serialization.
+     */
+    static final class Serializer implements GsonSerializer<ConcurrentAccountLedger> {
+        private static final Serializer serializer = new Serializer();
+
+        private Serializer() {
+        }
+
+        @Override
+        public JsonElement serialize(ConcurrentAccountLedger ledger, Type type, JsonSerializationContext context) {
+            JsonObject object = new JsonObject();
+            object.add("accounts", GsonSerializer.serializeCollection(ledger.getAccounts(), context));
+            return object;
+        }
+
+        @Override
+        public ConcurrentAccountLedger deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
+            JsonObject object = element.getAsJsonObject();
+            ConcurrentAccountLedger ledger = new ConcurrentAccountLedger();
+            Arrays.stream(GsonSerializer.deserializeArray(object.getAsJsonArray("accounts"), context, MXAccount.class))
+                    .forEach(account -> ledger.accountMap.put(account.getUniqueId(), account));
+
+            return ledger;
+        }
     }
 }
