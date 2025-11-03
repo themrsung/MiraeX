@@ -31,6 +31,7 @@ public final class CommandRegistrant {
 
     /**
      * Returns the list of commands.
+     *
      * @return The list of commands
      */
     public List<Command> getCommands() {

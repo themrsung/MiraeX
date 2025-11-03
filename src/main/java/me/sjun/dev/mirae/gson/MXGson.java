@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.javalin.json.JsonMapper;
 import me.sjun.dev.mirae.account.MXAccount;
+import me.sjun.dev.mirae.config.MXConfig;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Type;
@@ -68,7 +69,8 @@ public final class MXGson {
     static {
         builder.registerTypeAdapter(LocalDate.class, LocalDateSerializer.serializer())
                 .registerTypeAdapter(LocalDateTime.class, LocalDateTimeSerializer.serializer())
-                .registerTypeHierarchyAdapter(MXAccount.class, MXAccount.serializer());
+                .registerTypeHierarchyAdapter(MXAccount.class, MXAccount.serializer())
+                .registerTypeAdapter(MXConfig.class, MXConfig.serializer());
     }
 
     private static final Gson gson = builder.create();

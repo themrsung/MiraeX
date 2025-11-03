@@ -6,9 +6,6 @@ import me.sjun.dev.mirae.command.CommandRegistrant;
 import me.sjun.dev.mirae.command.misc.PluginIntroCommand;
 import me.sjun.dev.mirae.listener.EventRegistrant;
 import me.sjun.dev.mirae.listener.player.PlayerAccountCreator;
-import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -49,9 +46,6 @@ public final class MiraeX extends JavaPlugin {
         getLogger().info("Registering listeners...");
         eventRegistrant = EventRegistrant.start()
                 .queue(new PlayerAccountCreator())
-                .queue((PlayerInteractEvent e) -> {
-                    Bukkit.broadcast(Component.text(e.getPlayer().getName()));
-                })
                 .register(this);
 
         getLogger().info("Registering commands...");

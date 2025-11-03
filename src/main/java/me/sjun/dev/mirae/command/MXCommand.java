@@ -12,10 +12,11 @@ import java.util.List;
 public abstract class MXCommand extends Command {
     /**
      * Protected constructor.
-     * @param name The name
-     * @param description The description
+     *
+     * @param name         The name
+     * @param description  The description
      * @param usageMessage The usage
-     * @param aliases The list of aliases
+     * @param aliases      The list of aliases
      */
     protected MXCommand(@NotNull String name, @NotNull String description, @NotNull String usageMessage, @NotNull List<String> aliases) {
         super(name, description, usageMessage, aliases);

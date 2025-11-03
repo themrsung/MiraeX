@@ -24,12 +24,14 @@ public sealed interface MXAccount extends Serializable permits AbstractAccount {
 
     /**
      * Returns the offline player.
+     *
      * @return The offline player
      */
     @NotNull OfflinePlayer getOfflinePlayer();
 
     /**
      * Returns the player.
+     *
      * @return The player
      */
     @NotNull Optional<Player> getPlayer();
@@ -62,12 +64,14 @@ public sealed interface MXAccount extends Serializable permits AbstractAccount {
 
     /**
      * Returns the account type.
+     *
      * @return The account type
      */
     @NotNull AccountType getType();
 
     /**
      * Returns the JSON serializer.
+     *
      * @return The JSON serializer
      */
     static @NotNull Serializer serializer() {
@@ -79,7 +83,9 @@ public sealed interface MXAccount extends Serializable permits AbstractAccount {
      */
     final class Serializer implements GsonSerializer<MXAccount> {
         private static final Serializer serializer = new Serializer();
-        private Serializer() {}
+
+        private Serializer() {
+        }
 
         @Override
         public JsonElement serialize(MXAccount account, Type type, JsonSerializationContext context) {

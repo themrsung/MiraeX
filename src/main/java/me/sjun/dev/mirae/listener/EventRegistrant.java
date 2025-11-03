@@ -28,13 +28,14 @@ public final class EventRegistrant {
         listenerList = new ArrayList<>();
     }
 
-    private final List<MXListener<?>> listenerList;
+    private final List<Listener> listenerList;
 
     /**
      * Returns the list of listeners.
+     *
      * @return The list of listeners
      */
-    public List<MXListener<?>> getListeners() {
+    public List<Listener> getListeners() {
         return List.copyOf(listenerList);
     }
 
@@ -44,7 +45,7 @@ public final class EventRegistrant {
      * @param listener The listener
      * @return {@code this}
      */
-    public @NotNull EventRegistrant queue(@NotNull MXListener<?> listener) {
+    public @NotNull EventRegistrant queue(@NotNull Listener listener) {
         listenerList.add(listener);
         return this;
     }

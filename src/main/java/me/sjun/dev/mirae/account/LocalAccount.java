@@ -13,8 +13,9 @@ import java.util.UUID;
 public final class LocalAccount extends AbstractAccount {
     /**
      * Creates a new local account.
+     *
      * @param uniqueId The unique identifier
-     * @param name The name
+     * @param name     The name
      */
     public LocalAccount(@NotNull UUID uniqueId, @NotNull String name) {
         super(uniqueId, name);

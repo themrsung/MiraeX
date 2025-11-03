@@ -1,6 +1,9 @@
 name: MiraeX
 version: '1.0'
 main: me.sjun.dev.mirae.MiraeX
+author: sjun___
+description: 미래 온라인 공식 플러그인
+website: https://sjun.me/
 api-version: '1.21'
 dependencies:
   bootstrap:
