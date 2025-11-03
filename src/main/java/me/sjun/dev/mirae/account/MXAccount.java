@@ -1,9 +1,6 @@
 package me.sjun.dev.mirae.account;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
+import com.google.gson.*;
 import me.sjun.dev.mirae.gson.GsonSerializer;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -86,12 +83,21 @@ public sealed interface MXAccount extends Serializable permits AbstractAccount {
 
         @Override
         public JsonElement serialize(MXAccount account, Type type, JsonSerializationContext context) {
-            return null;
+            return switch (account) {
+                case LocalAccount local -> LocalAccount.serializer().serialize(local, type, context);
+            };
         }
 
         @Override
         public MXAccount deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
-            return null;
+            JsonObject object = element.getAsJsonObject();
+            if (!object.has("type") || object.get("type").isJsonNull()){
+                throw new JsonParseException("Required parameter type missing.");
+            }
+
+            AccountType accountType = context.deserialize(object.get("type"), AccountType.class);
+
+            // ...
         }
     }
 }

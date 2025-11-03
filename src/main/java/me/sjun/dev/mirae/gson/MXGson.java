@@ -3,6 +3,7 @@ package me.sjun.dev.mirae.gson;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.javalin.json.JsonMapper;
+import me.sjun.dev.mirae.account.MXAccount;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Type;
@@ -66,7 +67,8 @@ public final class MXGson {
 
     static {
         builder.registerTypeAdapter(LocalDate.class, LocalDateSerializer.serializer())
-                .registerTypeAdapter(LocalDateTime.class, LocalDateTimeSerializer.serializer());
+                .registerTypeAdapter(LocalDateTime.class, LocalDateTimeSerializer.serializer())
+                .registerTypeHierarchyAdapter(MXAccount.class, MXAccount.serializer());
     }
 
     private static final Gson gson = builder.create();
