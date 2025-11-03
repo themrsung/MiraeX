@@ -56,6 +56,8 @@ public final class MiraeX extends JavaPlugin {
     public void onEnable() {
         getLogger().info("Starting MiraeX...");
 
+        // Load MXConfig from MXConfig.SAVE_PATH/config.json or new config = MXConfig()
+
         getLogger().info("Registering listeners...");
         eventRegistrant = EventRegistrant.start()
                 .queue(new PlayerAccountCreator())
@@ -71,11 +73,14 @@ public final class MiraeX extends JavaPlugin {
         getLogger().info("Account ledger registered to Vault economy API.");
 
         instance = this;
+        getLogger().info("MiraeX loaded!");
     }
 
     @Override
     public void onDisable() {
+        getLogger().info("Disabling MiraeX...");
         instance = null;
+        getLogger().info("MiraeX disabled!");
     }
 
     private MiraeX() {
