@@ -2,8 +2,10 @@ package me.sjun.dev.mirae.vault;
 
 import me.sjun.dev.mirae.MiraeX;
 import me.sjun.dev.mirae.account.AccountLedger;
+import me.sjun.dev.mirae.account.MXAccount;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 
@@ -50,172 +52,192 @@ public final class VaultAdapter implements Economy {
 
     @Override
     public String format(double v) {
-        return NumberFormat.getNumberInstance().format(v);
+        return NumberFormat.getNumberInstance().format(v)
+                + MiraeX.getInstance().getMiraeConfig().getCurrencySymbol();
     }
 
     @Override
     public String currencyNamePlural() {
-        return "";
+        return MiraeX.getInstance().getMiraeConfig().getCurrencyName();
     }
 
     @Override
     public String currencyNameSingular() {
-        return "";
-    }
-
-    @Override
-    public boolean hasAccount(String s) {
-        return false;
+        return MiraeX.getInstance().getMiraeConfig().getCurrencyName();
     }
 
     @Override
     public boolean hasAccount(OfflinePlayer offlinePlayer) {
-        return false;
-    }
-
-    @Override
-    public boolean hasAccount(String s, String s1) {
-        return false;
-    }
-
-    @Override
-    public boolean hasAccount(OfflinePlayer offlinePlayer, String s) {
-        return false;
-    }
-
-    @Override
-    public double getBalance(String s) {
-        return 0;
+        return ledger.getAccount(offlinePlayer.getUniqueId()).isPresent();
     }
 
     @Override
     public double getBalance(OfflinePlayer offlinePlayer) {
-        return 0;
-    }
-
-    @Override
-    public double getBalance(String s, String s1) {
-        return 0;
-    }
-
-    @Override
-    public double getBalance(OfflinePlayer offlinePlayer, String s) {
-        return 0;
-    }
-
-    @Override
-    public boolean has(String s, double v) {
-        return false;
+        return ledger.getAccount(offlinePlayer.getUniqueId()).map(MXAccount::getBalance).orElse(0d);
     }
 
     @Override
     public boolean has(OfflinePlayer offlinePlayer, double v) {
-        return false;
-    }
-
-    @Override
-    public boolean has(String s, String s1, double v) {
-        return false;
-    }
-
-    @Override
-    public boolean has(OfflinePlayer offlinePlayer, String s, double v) {
-        return false;
-    }
-
-    @Override
-    public EconomyResponse withdrawPlayer(String s, double v) {
-        return null;
+        return ledger.getAccount(offlinePlayer.getUniqueId()).map(MXAccount::getBalance).orElse(0d) >= v;
     }
 
     @Override
     public EconomyResponse withdrawPlayer(OfflinePlayer offlinePlayer, double v) {
-        return null;
-    }
-
-    @Override
-    public EconomyResponse withdrawPlayer(String s, String s1, double v) {
-        return null;
-    }
-
-    @Override
-    public EconomyResponse withdrawPlayer(OfflinePlayer offlinePlayer, String s, double v) {
-        return null;
-    }
-
-    @Override
-    public EconomyResponse depositPlayer(String s, double v) {
-        return null;
+        return ledger.getAccount(offlinePlayer.getUniqueId()).map(account -> {
+            if (account.getBalance() < v)
+                return new EconomyResponse(v, account.getBalance(), EconomyResponse.ResponseType.FAILURE, "Insufficient funds");
+            ledger.subtractBalance(account, v, "Withdrawal by Vault.");
+            return new EconomyResponse(v, account.getBalance(), EconomyResponse.ResponseType.SUCCESS, "Success");
+        }).orElse(new EconomyResponse(v, 0, EconomyResponse.ResponseType.FAILURE, "Account not found"));
     }
 
     @Override
     public EconomyResponse depositPlayer(OfflinePlayer offlinePlayer, double v) {
-        return null;
+        return ledger.getAccount(offlinePlayer.getUniqueId()).map(account -> {
+            ledger.addBalance(account, v, "Deposit by Vault.");
+            return new EconomyResponse(v, account.getBalance(), EconomyResponse.ResponseType.SUCCESS, "Success");
+        }).orElse(new EconomyResponse(v, 0, EconomyResponse.ResponseType.FAILURE, "Account not found"));
+    }
+
+    @Override
+    public boolean createPlayerAccount(OfflinePlayer offlinePlayer) {
+        try {
+            ledger.createAccount(offlinePlayer);
+            return true;
+        } catch (IllegalArgumentException e) {
+            MiraeX.getInstance().getLogger().warning("Vault tried to create account for already existing player " + offlinePlayer.getUniqueId());
+            return false;
+        }
+    }
+
+    @Override
+    public boolean hasAccount(String s) {
+        return hasAccount(Bukkit.getOfflinePlayer(s));
+    }
+
+    @Override
+    public boolean hasAccount(String s, String s1) {
+        return hasAccount(Bukkit.getOfflinePlayer(s));
+    }
+
+    @Override
+    public boolean hasAccount(OfflinePlayer offlinePlayer, String s) {
+        return hasAccount(offlinePlayer);
+    }
+
+    @Override
+    public double getBalance(String s) {
+        return getBalance(Bukkit.getOfflinePlayer(s));
+    }
+
+    @Override
+    public double getBalance(String s, String s1) {
+        return getBalance(Bukkit.getOfflinePlayer(s));
+    }
+
+    @Override
+    public double getBalance(OfflinePlayer offlinePlayer, String s) {
+        return getBalance(offlinePlayer);
+    }
+
+    @Override
+    public boolean has(String s, double v) {
+        return has(Bukkit.getOfflinePlayer(s), v);
+    }
+
+    @Override
+    public boolean has(String s, String s1, double v) {
+        return has(Bukkit.getOfflinePlayer(s), v);
+    }
+
+    @Override
+    public boolean has(OfflinePlayer offlinePlayer, String s, double v) {
+        return has(offlinePlayer, v);
+    }
+
+    @Override
+    public EconomyResponse withdrawPlayer(String s, double v) {
+        return withdrawPlayer(Bukkit.getOfflinePlayer(s), v);
+    }
+
+    @Override
+    public EconomyResponse withdrawPlayer(String s, String s1, double v) {
+        return withdrawPlayer(Bukkit.getOfflinePlayer(s), v);
+    }
+
+    @Override
+    public EconomyResponse withdrawPlayer(OfflinePlayer offlinePlayer, String s, double v) {
+        return withdrawPlayer(offlinePlayer, v);
+    }
+
+    @Override
+    public EconomyResponse depositPlayer(String s, double v) {
+        return depositPlayer(Bukkit.getOfflinePlayer(s), v);
     }
 
     @Override
     public EconomyResponse depositPlayer(String s, String s1, double v) {
-        return null;
+        return depositPlayer(Bukkit.getOfflinePlayer(s), v);
     }
 
     @Override
     public EconomyResponse depositPlayer(OfflinePlayer offlinePlayer, String s, double v) {
-        return null;
+        return depositPlayer(offlinePlayer, v);
     }
 
     @Override
     public EconomyResponse createBank(String s, String s1) {
-        return null;
+        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "Banks are not supported.");
     }
 
     @Override
     public EconomyResponse createBank(String s, OfflinePlayer offlinePlayer) {
-        return null;
+        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "Banks are not supported.");
     }
 
     @Override
     public EconomyResponse deleteBank(String s) {
-        return null;
+        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "Banks are not supported.");
     }
 
     @Override
     public EconomyResponse bankBalance(String s) {
-        return null;
+        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "Banks are not supported.");
     }
 
     @Override
     public EconomyResponse bankHas(String s, double v) {
-        return null;
+        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "Banks are not supported.");
     }
 
     @Override
     public EconomyResponse bankWithdraw(String s, double v) {
-        return null;
+        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "Banks are not supported.");
     }
 
     @Override
     public EconomyResponse bankDeposit(String s, double v) {
-        return null;
+        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "Banks are not supported.");
     }
 
     @Override
     public EconomyResponse isBankOwner(String s, String s1) {
-        return null;
+        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "Banks are not supported.");
     }
 
     @Override
     public EconomyResponse isBankOwner(String s, OfflinePlayer offlinePlayer) {
-        return null;
+        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "Banks are not supported.");
     }
 
     @Override
     public EconomyResponse isBankMember(String s, String s1) {
-        return null;
+        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "Banks are not supported.");
     }
 
     @Override
     public EconomyResponse isBankMember(String s, OfflinePlayer offlinePlayer) {
-        return null;
+        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "Banks are not supported.");
     }
 
     @Override
@@ -225,21 +247,16 @@ public final class VaultAdapter implements Economy {
 
     @Override
     public boolean createPlayerAccount(String s) {
-        return false;
-    }
-
-    @Override
-    public boolean createPlayerAccount(OfflinePlayer offlinePlayer) {
-        return false;
+        return createPlayerAccount(Bukkit.getOfflinePlayer(s));
     }
 
     @Override
     public boolean createPlayerAccount(String s, String s1) {
-        return false;
+        return createPlayerAccount(Bukkit.getOfflinePlayer(s));
     }
 
     @Override
     public boolean createPlayerAccount(OfflinePlayer offlinePlayer, String s) {
-        return false;
+        return createPlayerAccount(offlinePlayer);
     }
 }

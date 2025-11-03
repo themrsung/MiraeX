@@ -20,6 +20,7 @@ public final class MXConfig implements Serializable {
 
     /**
      * Returns the save path.
+     *
      * @return The save path
      */
     public static @NotNull String getSavePath() {
