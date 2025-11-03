@@ -2,6 +2,8 @@ package me.sjun.dev.mirae;
 
 import me.sjun.dev.mirae.account.AccountLedger;
 import me.sjun.dev.mirae.account.ConcurrentAccountLedger;
+import me.sjun.dev.mirae.listener.EventRegistrant;
+import me.sjun.dev.mirae.listener.player.PlayerAccountCreator;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -37,6 +39,13 @@ public final class MiraeX extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        getLogger().info("Starting MiraeX...");
+
+        getLogger().info("Registering listeners...");
+        EventRegistrant.start()
+                .queue(new PlayerAccountCreator())
+                .register(this);
+
         instance = this;
     }
 

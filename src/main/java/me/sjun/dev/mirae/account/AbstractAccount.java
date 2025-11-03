@@ -5,15 +5,19 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import me.sjun.dev.mirae.gson.GsonSerializer;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Type;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
  * Locally modifiable account.
  */
-public final class AbstractAccount implements MXAccount {
+public abstract sealed class AbstractAccount implements MXAccount permits LocalAccount {
     /**
      * Creates a new local account.
      *
@@ -31,32 +35,38 @@ public final class AbstractAccount implements MXAccount {
     private @NotNull String name;
     double balance;
 
-    /**
-     * Returns the JSON serializer.
-     *
-     * @return THe JSON serializer
-     */
-    static @NotNull Serializer serializer() {
-        return Serializer.serializer;
+    @Override
+    public @NotNull UUID getUniqueId() {
+        return uniqueId;
     }
 
-    /**
-     * JSON serialization.
-     */
-    static final class Serializer implements GsonSerializer<AbstractAccount> {
-        private static final Serializer serializer = new Serializer();
+    @Override
+    public @NotNull OfflinePlayer getOfflinePlayer() {
+        return Bukkit.getOfflinePlayer(uniqueId);
+    }
 
-        private Serializer() {
-        }
+    @Override
+    public @NotNull Optional<Player> getPlayer() {
+        return Optional.ofNullable(Bukkit.getPlayer(uniqueId));
+    }
 
-        @Override
-        public JsonElement serialize(AbstractAccount abstractAccount, Type type, JsonSerializationContext context) {
-            return null;
-        }
+    @Override
+    public @NotNull String getName() {
+        return name;
+    }
 
-        @Override
-        public AbstractAccount deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
-            return null;
-        }
+    @Override
+    public void setName(@NotNull String name) {
+        this.name = name;
+    }
+
+    @Override
+    public void updateName() {
+        getPlayer().map(Player::getName).ifPresent(this::setName);
+    }
+
+    @Override
+    public double getBalance() {
+        return balance;
     }
 }
