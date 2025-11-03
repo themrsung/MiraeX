@@ -8,6 +8,8 @@ import me.sjun.dev.mirae.config.MXConfig;
 import com.google.gson.JsonParseException;
 import me.sjun.dev.mirae.listener.EventRegistrant;
 import me.sjun.dev.mirae.listener.player.PlayerAccountCreator;
+import me.sjun.dev.mirae.task.TaskRegistrant;
+import me.sjun.dev.mirae.task.io.AutosaveTask;
 import me.sjun.dev.mirae.vault.VaultAdapter;
 import me.sjun.dev.mirae.gson.MXGson;
 import net.milkbowl.vault.economy.Economy;
@@ -78,6 +80,11 @@ public final class MiraeX extends JavaPlugin {
                 .queue(new PluginIntroCommand())
                 .register(this);
 
+        getLogger().info("Registering synchronous tasks...");
+        taskRegistrant = TaskRegistrant.start()
+                .queue(new AutosaveTask())
+                .register(this);
+
         getLogger().info("Hooking into Vault...");
         getServer().getServicesManager().register(Economy.class, new VaultAdapter(accountLedger), this, ServicePriority.Normal);
         getLogger().info("Account ledger registered to Vault economy API.");
@@ -118,6 +125,14 @@ public final class MiraeX extends JavaPlugin {
         saveMiraeConfig();
     }
 
+    public void save() throws IOException {
+
+    }
+
+    public void load() throws IOException {
+
+    }
+
     private void saveMiraeConfig() {
         if (config == null) {
             return;
@@ -150,6 +165,31 @@ public final class MiraeX extends JavaPlugin {
 
     private MXConfig config;
 
+    /**
+     * Returns the event registrant.
+     * @return The event registrant
+     */
+    public @NotNull EventRegistrant getEventRegistrant() {
+        return eventRegistrant;
+    }
+
+    /**
+     * Returns the command registrant.
+     * @return The command registrant
+     */
+    public @NotNull CommandRegistrant getCommandRegistrant() {
+        return commandRegistrant;
+    }
+
+    /**
+     * Returns the task registrant.
+     * @return The task registrant
+     */
+    public @NotNull TaskRegistrant getTaskRegistrant() {
+        return taskRegistrant;
+    }
+
     private EventRegistrant eventRegistrant;
     private CommandRegistrant commandRegistrant;
+    private TaskRegistrant taskRegistrant;
 }
