@@ -5,15 +5,25 @@ import me.sjun.dev.mirae.account.ConcurrentAccountLedger;
 import me.sjun.dev.mirae.command.CommandRegistrant;
 import me.sjun.dev.mirae.command.misc.PluginIntroCommand;
 import me.sjun.dev.mirae.config.MXConfig;
+import com.google.gson.JsonParseException;
 import me.sjun.dev.mirae.listener.EventRegistrant;
 import me.sjun.dev.mirae.listener.player.PlayerAccountCreator;
 import me.sjun.dev.mirae.vault.VaultAdapter;
+import me.sjun.dev.mirae.gson.MXGson;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.Objects;
+import java.util.logging.Level;
 
 public final class MiraeX extends JavaPlugin {
     /**
@@ -56,7 +66,7 @@ public final class MiraeX extends JavaPlugin {
     public void onEnable() {
         getLogger().info("Starting MiraeX...");
 
-        // Load MXConfig from MXConfig.SAVE_PATH/config.json or new config = MXConfig()
+        loadMiraeConfig();
 
         getLogger().info("Registering listeners...");
         eventRegistrant = EventRegistrant.start()
@@ -79,8 +89,56 @@ public final class MiraeX extends JavaPlugin {
     @Override
     public void onDisable() {
         getLogger().info("Disabling MiraeX...");
+        saveMiraeConfig();
         instance = null;
         getLogger().info("MiraeX disabled!");
+    }
+
+    private void loadMiraeConfig() {
+        Path directory = Path.of(MXConfig.getSavePath());
+        Path configPath = directory.resolve("config.json");
+
+        try {
+            Files.createDirectories(directory);
+        } catch (IOException e) {
+            getLogger().log(Level.SEVERE, "Failed to create MiraeX config directory.", e);
+        }
+
+        if (Files.exists(configPath)) {
+            try (Reader reader = Files.newBufferedReader(configPath, StandardCharsets.UTF_8)) {
+                config = MXGson.gson().fromJson(reader, MXConfig.class);
+            } catch (IOException | JsonParseException e) {
+                getLogger().log(Level.SEVERE, "Failed to load MiraeX config. Using defaults.", e);
+                config = new MXConfig();
+            }
+            return;
+        }
+
+        config = new MXConfig();
+        saveMiraeConfig();
+    }
+
+    private void saveMiraeConfig() {
+        if (config == null) {
+            return;
+        }
+
+        Path directory = Path.of(MXConfig.getSavePath());
+        Path configPath = directory.resolve("config.json");
+
+        try {
+            Files.createDirectories(directory);
+        } catch (IOException e) {
+            getLogger().log(Level.SEVERE, "Failed to create MiraeX config directory.", e);
+            return;
+        }
+
+        try (Writer writer = Files.newBufferedWriter(configPath, StandardCharsets.UTF_8,
+                StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE)) {
+            MXGson.prettyGson().toJson(config, writer);
+        } catch (IOException e) {
+            getLogger().log(Level.SEVERE, "Failed to save MiraeX config.", e);
+        }
     }
 
     private MiraeX() {
