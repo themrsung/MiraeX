@@ -4,10 +4,19 @@ import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.Serializable;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface AccountLedger {
+public sealed interface AccountLedger extends Serializable permits ConcurrentAccountLedger {
+    /**
+     * Returns a list of all accounts.
+     *
+     * @return The list of all accounts
+     */
+    @NotNull List<MXAccount> getAccounts();
+
     /**
      * Returns the account associated with the unique identifier.
      *

@@ -2,12 +2,13 @@ package me.sjun.dev.mirae.account;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 /**
  * MiraeX account.
  */
-public interface MXAccount {
+public sealed interface MXAccount extends Serializable permits AbstractAccount {
     /**
      * Returns the unique identifier.
      *
