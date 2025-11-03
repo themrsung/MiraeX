@@ -19,6 +19,5 @@ public final class PlayerAccountCreator implements Listener {
             MXAccount account = MiraeX.getInstance().getAccountLedger().createAccount(player);
             account.setName(player.getName());
         }
-        ;
     }
 }

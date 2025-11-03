@@ -6,6 +6,7 @@ import io.javalin.json.JsonMapper;
 import me.sjun.dev.mirae.account.AccountLedger;
 import me.sjun.dev.mirae.account.MXAccount;
 import me.sjun.dev.mirae.config.MXConfig;
+import me.sjun.dev.mirae.storage.ItemStorage;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -76,7 +77,8 @@ public final class MXGson {
                 .registerTypeHierarchyAdapter(AccountLedger.class, AccountLedger.serializer())
                 .registerTypeAdapter(MXConfig.class, MXConfig.serializer())
                 .registerTypeHierarchyAdapter(ItemStack.class, ItemStackSerializer.serializer())
-                .registerTypeHierarchyAdapter(Location.class, LocationSerializer.serializer());
+                .registerTypeHierarchyAdapter(Location.class, LocationSerializer.serializer())
+                .registerTypeAdapter(ItemStorage.class, ItemStorage.serializer());
     }
 
     private static final Gson gson = builder.create();

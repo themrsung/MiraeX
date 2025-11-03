@@ -6,7 +6,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public interface GsonSerializer<T> extends JsonSerializer<T>, JsonDeserializer<T> {
@@ -58,7 +58,7 @@ public interface GsonSerializer<T> extends JsonSerializer<T>, JsonDeserializer<T
 
     static <K, V> Map<K, V> deserializeMap(JsonElement json, JsonDeserializationContext context, Class<K> keyType, Class<V> valueType) {
         JsonArray array = json.getAsJsonArray();
-        Map<K, V> map = new HashMap<>();
+        Map<K, V> map = new LinkedHashMap<>();
         array.forEach(entry -> {
             if (!(entry instanceof JsonObject o)) return;
             if (!o.has("key") || !o.has("value")) return;

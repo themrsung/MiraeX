@@ -1,6 +1,7 @@
 package me.sjun.dev.mirae;
 
 import com.google.gson.JsonParseException;
+import io.javalin.Javalin;
 import me.sjun.dev.mirae.account.AccountLedger;
 import me.sjun.dev.mirae.account.ConcurrentAccountLedger;
 import me.sjun.dev.mirae.command.CommandRegistrant;
@@ -12,6 +13,7 @@ import me.sjun.dev.mirae.listener.player.PlayerAccountCreator;
 import me.sjun.dev.mirae.task.TaskRegistrant;
 import me.sjun.dev.mirae.task.io.AutosaveTask;
 import me.sjun.dev.mirae.vault.VaultAdapter;
+import me.sjun.dev.mirae.webhook.ServerHealthHandler;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -28,6 +30,7 @@ import java.util.Objects;
 import java.util.logging.Level;
 
 public final class MiraeX extends JavaPlugin {
+
     /**
      * Returns whether the plugin is loaded.
      *
@@ -95,6 +98,14 @@ public final class MiraeX extends JavaPlugin {
             getLogger().severe("Error loading save file. Shutting down...");
             getServer().getPluginManager().disablePlugin(this);
         }
+
+        getLogger().info("Starting Javalin server...");
+
+        javalin = Javalin.create(config -> config.jsonMapper(MXGson.javalinMapper()));
+        registerWebhooks();
+        javalin.start(MXConfig.getJavalinPort());
+
+        getLogger().info("Javalin started!");
 
         instance = this;
         getLogger().info("MiraeX loaded!");
@@ -242,4 +253,19 @@ public final class MiraeX extends JavaPlugin {
     private EventRegistrant eventRegistrant;
     private CommandRegistrant commandRegistrant;
     private TaskRegistrant taskRegistrant;
+
+    /**
+     * Returns the Javalin server.
+     *
+     * @return The Javalin server
+     */
+    public @NotNull Javalin getJavalin() {
+        return javalin;
+    }
+
+    private Javalin javalin;
+
+    private void registerWebhooks() {
+        javalin.get("/health", new ServerHealthHandler());
+    }
 }

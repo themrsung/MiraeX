@@ -19,6 +19,11 @@ public final class MXConfig implements Serializable {
     private static final @NotNull String SAVE_PATH = "plugins/MiraeX/";
 
     /**
+     * The Javalin port.
+     */
+    private static final int JAVALIN_PORT = 2000;
+
+    /**
      * Returns the save path.
      *
      * @return The save path
@@ -27,6 +32,14 @@ public final class MXConfig implements Serializable {
         return SAVE_PATH;
     }
 
+    /**
+     * Returns the Javalin port.
+     *
+     * @return The Javalin port
+     */
+    public static int getJavalinPort() {
+        return JAVALIN_PORT;
+    }
     /// Modifiable
 
     /**
