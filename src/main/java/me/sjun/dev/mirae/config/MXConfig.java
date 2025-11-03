@@ -124,7 +124,34 @@ public final class MXConfig implements Serializable {
 
         @Override
         public MXConfig deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
-            return null;
+            if (element == null || element.isJsonNull()) {
+                throw new JsonParseException("Cannot deserialize null config.");
+            }
+
+            if (!element.isJsonObject()) {
+                throw new JsonParseException("Expected JsonObject for MXConfig.");
+            }
+
+            JsonObject object = element.getAsJsonObject();
+
+            if (!object.has("serverName") || object.get("serverName").isJsonNull()) {
+                throw new JsonParseException("Required parameter serverName missing.");
+            }
+
+            if (!object.has("currencyName") || object.get("currencyName").isJsonNull()) {
+                throw new JsonParseException("Required parameter currencyName missing.");
+            }
+
+            if (!object.has("currencySymbol") || object.get("currencySymbol").isJsonNull()) {
+                throw new JsonParseException("Required parameter currencySymbol missing.");
+            }
+
+            MXConfig config = new MXConfig();
+            config.setServerName(object.get("serverName").getAsString());
+            config.setCurrencyName(object.get("currencyName").getAsString());
+            config.setCurrencySymbol(object.get("currencySymbol").getAsString());
+
+            return config;
         }
     }
 }
