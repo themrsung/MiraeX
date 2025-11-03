@@ -25,6 +25,18 @@ public final class ConcurrentAccountLedger implements AccountLedger {
 
     private final Map<@NotNull UUID, @NotNull MXAccount> accountMap;
 
+    /**
+     * Replaces the current account map with provided accounts.
+     *
+     * @param accounts The accounts to load
+     */
+    public void replaceAccounts(@NotNull Collection<MXAccount> accounts) {
+        accountMap.clear();
+        for (MXAccount account : accounts) {
+            accountMap.put(account.getUniqueId(), account);
+        }
+    }
+
     @Override
     public @NotNull List<MXAccount> getAccounts() {
         return List.copyOf(accountMap.values());

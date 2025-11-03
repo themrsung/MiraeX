@@ -126,11 +126,35 @@ public final class MiraeX extends JavaPlugin {
     }
 
     public void save() throws IOException {
-        // Save accountLedger as JSON to accounts.json in SAVE_PATH
+        Path directory = Path.of(MXConfig.getSavePath());
+        Path accountsPath = directory.resolve("accounts.json");
+
+        Files.createDirectories(directory);
+
+        try (Writer writer = Files.newBufferedWriter(accountsPath, StandardCharsets.UTF_8,
+                StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE)) {
+            MXGson.prettyGson().toJson(accountLedger, writer);
+        }
     }
 
     public void load() throws IOException {
-        // Load accountLedger
+        Path directory = Path.of(MXConfig.getSavePath());
+        Path accountsPath = directory.resolve("accounts.json");
+
+        if (!Files.exists(accountsPath)) {
+            return;
+        }
+
+        try (Reader reader = Files.newBufferedReader(accountsPath, StandardCharsets.UTF_8)) {
+            AccountLedger loadedLedger = MXGson.gson().fromJson(reader, AccountLedger.class);
+            if (loadedLedger instanceof ConcurrentAccountLedger concurrentLoaded && accountLedger instanceof ConcurrentAccountLedger concurrentExisting) {
+                concurrentExisting.replaceAccounts(concurrentLoaded.getAccounts());
+            } else if (loadedLedger != null) {
+                getLogger().log(Level.WARNING, "Unsupported account ledger implementation: " + loadedLedger.getClass().getName());
+            }
+        } catch (JsonParseException e) {
+            getLogger().log(Level.SEVERE, "Failed to load account ledger.", e);
+        }
     }
 
     private void saveMiraeConfig() {
