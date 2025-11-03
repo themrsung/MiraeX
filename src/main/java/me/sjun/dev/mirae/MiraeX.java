@@ -4,7 +4,7 @@ import com.google.gson.JsonParseException;
 import me.sjun.dev.mirae.account.AccountLedger;
 import me.sjun.dev.mirae.account.ConcurrentAccountLedger;
 import me.sjun.dev.mirae.command.CommandRegistrant;
-import me.sjun.dev.mirae.command.misc.PluginIntroCommand;
+import me.sjun.dev.mirae.command.misc.PluginInfoCommand;
 import me.sjun.dev.mirae.config.MXConfig;
 import me.sjun.dev.mirae.gson.MXGson;
 import me.sjun.dev.mirae.listener.EventRegistrant;
@@ -68,8 +68,6 @@ public final class MiraeX extends JavaPlugin {
     public void onEnable() {
         getLogger().info("Starting MiraeX...");
 
-        loadMiraeConfig();
-
         getLogger().info("Registering listeners...");
         eventRegistrant = EventRegistrant.start()
                 .queue(new PlayerAccountCreator())
@@ -77,7 +75,7 @@ public final class MiraeX extends JavaPlugin {
 
         getLogger().info("Registering commands...");
         commandRegistrant = CommandRegistrant.start()
-                .queue(new PluginIntroCommand())
+                .queue(new PluginInfoCommand())
                 .register(this);
 
         getLogger().info("Registering synchronous tasks...");
@@ -89,6 +87,15 @@ public final class MiraeX extends JavaPlugin {
         getServer().getServicesManager().register(Economy.class, new VaultAdapter(accountLedger), this, ServicePriority.Normal);
         getLogger().info("Account ledger registered to Vault economy API.");
 
+        getLogger().info("Loading save file...");
+        try {
+            load();
+            getLogger().info("Save file loaded!");
+        } catch (IOException e) {
+            getLogger().severe("Error loading save file. Shutting down...");
+            getServer().getPluginManager().disablePlugin(this);
+        }
+
         instance = this;
         getLogger().info("MiraeX loaded!");
     }
@@ -96,9 +103,57 @@ public final class MiraeX extends JavaPlugin {
     @Override
     public void onDisable() {
         getLogger().info("Disabling MiraeX...");
-        saveMiraeConfig();
+
+        getLogger().info("Saving data...");
+        try {
+            save();
+            getLogger().info("Data saved!");
+        } catch (IOException e) {
+            getLogger().severe("Error saving data.");
+        }
+
         instance = null;
         getLogger().info("MiraeX disabled!");
+    }
+
+    public void save() throws IOException {
+        saveMiraeConfig();
+
+        Path directory = Path.of(MXConfig.getSavePath());
+        Path accountsPath = directory.resolve("accounts.json");
+
+        Files.createDirectories(directory);
+
+        try (Writer writer = Files.newBufferedWriter(accountsPath, StandardCharsets.UTF_8,
+                StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE)) {
+            MXGson.prettyGson().toJson(accountLedger, writer);
+        }
+    }
+
+    public void loadConfig() throws IOException {
+        loadMiraeConfig();
+    }
+
+    public void load() throws IOException {
+        loadMiraeConfig();
+
+        Path directory = Path.of(MXConfig.getSavePath());
+        Path accountsPath = directory.resolve("accounts.json");
+
+        if (!Files.exists(accountsPath)) {
+            return;
+        }
+
+        try (Reader reader = Files.newBufferedReader(accountsPath, StandardCharsets.UTF_8)) {
+            AccountLedger loadedLedger = MXGson.gson().fromJson(reader, AccountLedger.class);
+            if (loadedLedger instanceof ConcurrentAccountLedger concurrentLoaded && accountLedger instanceof ConcurrentAccountLedger concurrentExisting) {
+                concurrentExisting.replaceAccounts(concurrentLoaded.getAccounts());
+            } else if (loadedLedger != null) {
+                getLogger().log(Level.WARNING, "Unsupported account ledger implementation: " + loadedLedger.getClass().getName());
+            }
+        } catch (JsonParseException e) {
+            getLogger().log(Level.SEVERE, "Failed to load account ledger.", e);
+        }
     }
 
     private void loadMiraeConfig() {
@@ -123,38 +178,6 @@ public final class MiraeX extends JavaPlugin {
 
         config = new MXConfig();
         saveMiraeConfig();
-    }
-
-    public void save() throws IOException {
-        Path directory = Path.of(MXConfig.getSavePath());
-        Path accountsPath = directory.resolve("accounts.json");
-
-        Files.createDirectories(directory);
-
-        try (Writer writer = Files.newBufferedWriter(accountsPath, StandardCharsets.UTF_8,
-                StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE)) {
-            MXGson.prettyGson().toJson(accountLedger, writer);
-        }
-    }
-
-    public void load() throws IOException {
-        Path directory = Path.of(MXConfig.getSavePath());
-        Path accountsPath = directory.resolve("accounts.json");
-
-        if (!Files.exists(accountsPath)) {
-            return;
-        }
-
-        try (Reader reader = Files.newBufferedReader(accountsPath, StandardCharsets.UTF_8)) {
-            AccountLedger loadedLedger = MXGson.gson().fromJson(reader, AccountLedger.class);
-            if (loadedLedger instanceof ConcurrentAccountLedger concurrentLoaded && accountLedger instanceof ConcurrentAccountLedger concurrentExisting) {
-                concurrentExisting.replaceAccounts(concurrentLoaded.getAccounts());
-            } else if (loadedLedger != null) {
-                getLogger().log(Level.WARNING, "Unsupported account ledger implementation: " + loadedLedger.getClass().getName());
-            }
-        } catch (JsonParseException e) {
-            getLogger().log(Level.SEVERE, "Failed to load account ledger.", e);
-        }
     }
 
     private void saveMiraeConfig() {

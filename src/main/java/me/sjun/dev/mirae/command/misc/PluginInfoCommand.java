@@ -10,14 +10,14 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 /**
- * Plugin intro command.
+ * Plugin info command.
  */
-public final class PluginIntroCommand extends MXCommand {
+public final class PluginInfoCommand extends MXCommand {
     /**
      * Constructor.
      */
-    public PluginIntroCommand() {
-        super("miraex", "MiraeX version command.", "/miraex", List.of("mirae", "mx"));
+    public PluginInfoCommand() {
+        super("miraex", "MiraeX info command.", "/miraex", List.of("mirae", "mx"));
     }
 
     @Override

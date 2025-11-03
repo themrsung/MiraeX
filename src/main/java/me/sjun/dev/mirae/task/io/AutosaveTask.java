@@ -9,7 +9,7 @@ import java.io.IOException;
 /**
  * Autosave task.
  */
-public class AutosaveTask implements Task {
+public final class AutosaveTask implements Task {
     @Override
     public void run() {
         try {
