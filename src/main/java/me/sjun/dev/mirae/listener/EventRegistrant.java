@@ -28,7 +28,15 @@ public final class EventRegistrant {
         listenerList = new ArrayList<>();
     }
 
-    private final List<Listener> listenerList;
+    private final List<MXListener<?>> listenerList;
+
+    /**
+     * Returns the list of listeners.
+     * @return The list of listeners
+     */
+    public List<MXListener<?>> getListeners() {
+        return List.copyOf(listenerList);
+    }
 
     /**
      * Queues an event listener.
@@ -36,7 +44,7 @@ public final class EventRegistrant {
      * @param listener The listener
      * @return {@code this}
      */
-    public @NotNull EventRegistrant queue(@NotNull Listener listener) {
+    public @NotNull EventRegistrant queue(@NotNull MXListener<?> listener) {
         listenerList.add(listener);
         return this;
     }
@@ -45,9 +53,11 @@ public final class EventRegistrant {
      * Registers all the queued events.
      *
      * @param plugin The plugin instance
+     * @return {@code this}
      */
-    public void register(@NotNull JavaPlugin plugin) {
+    public @NotNull EventRegistrant register(@NotNull JavaPlugin plugin) {
         listenerList.forEach(listener -> Bukkit.getPluginManager().registerEvents(listener, plugin));
         plugin.getLogger().info("Registered " + listenerList.size() + " listeners to plugin manager.");
+        return this;
     }
 }

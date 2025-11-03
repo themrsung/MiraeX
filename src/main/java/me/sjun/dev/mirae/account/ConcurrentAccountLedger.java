@@ -38,7 +38,7 @@ public final class ConcurrentAccountLedger implements AccountLedger {
             throw new IllegalArgumentException("UUID is already taken.");
         }
 
-        MXAccount account = new AbstractAccount(uniqueId, name);
+        MXAccount account = new LocalAccount(uniqueId, name);
         accountMap.put(uniqueId, account);
         return account;
     }

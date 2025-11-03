@@ -59,10 +59,6 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
-        <repository>
-            <id>matteodev</id>
-            <url>https://maven.devs.beer/</url>
-        </repository>
     </repositories>
 
     <dependencies>
@@ -81,18 +77,6 @@
             <groupId>com.github.MilkBowl</groupId>
             <artifactId>VaultAPI</artifactId>
             <version>1.7</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>dev.lone</groupId>
-            <artifactId>api-itemsadder</artifactId>
-            <version>4.0.10</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.GriefPrevention</groupId>
-            <artifactId>GriefPrevention</artifactId>
-            <version>16.18.2</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
