@@ -91,13 +91,19 @@ public sealed interface MXAccount extends Serializable permits AbstractAccount {
         @Override
         public MXAccount deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
             JsonObject object = element.getAsJsonObject();
-            if (!object.has("type") || object.get("type").isJsonNull()){
+            if (!object.has("type") || object.get("type").isJsonNull()) {
                 throw new JsonParseException("Required parameter type missing.");
             }
 
             AccountType accountType = context.deserialize(object.get("type"), AccountType.class);
 
-            // ...
+            if (accountType == null) {
+                throw new JsonParseException("Unable to deserialize account type.");
+            }
+
+            return switch (accountType) {
+                case LOCAL -> LocalAccount.serializer().deserialize(element, type, context);
+            };
         }
     }
 }

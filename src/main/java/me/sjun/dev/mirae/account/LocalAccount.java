@@ -55,7 +55,40 @@ public final class LocalAccount extends AbstractAccount {
 
         @Override
         public LocalAccount deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
-            return null;
+            if (element == null || element.isJsonNull()) {
+                throw new JsonParseException("Cannot deserialize null account.");
+            }
+
+            JsonObject object = element.getAsJsonObject();
+
+            if (!object.has("type") || object.get("type").isJsonNull()) {
+                throw new JsonParseException("Required parameter type missing.");
+            }
+
+            AccountType accountType = context.deserialize(object.get("type"), AccountType.class);
+            if (accountType != AccountType.LOCAL) {
+                throw new JsonParseException("Invalid account type for LocalAccount: " + accountType);
+            }
+
+            if (!object.has("uniqueId") || object.get("uniqueId").isJsonNull()) {
+                throw new JsonParseException("Required parameter uniqueId missing.");
+            }
+
+            if (!object.has("name") || object.get("name").isJsonNull()) {
+                throw new JsonParseException("Required parameter name missing.");
+            }
+
+            if (!object.has("balance") || object.get("balance").isJsonNull()) {
+                throw new JsonParseException("Required parameter balance missing.");
+            }
+
+            UUID uniqueId = context.deserialize(object.get("uniqueId"), UUID.class);
+            String name = object.get("name").getAsString();
+
+            LocalAccount account = new LocalAccount(uniqueId, name);
+            account.balance = object.get("balance").getAsDouble();
+
+            return account;
         }
     }
 }
